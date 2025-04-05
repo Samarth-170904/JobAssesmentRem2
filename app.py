@@ -63,3 +63,23 @@ Please return only the JSON list like this:
         st.error("Hmm, I couldn't parse the AI's response. Here's what it said:")
         st.code(result_text)
         return pd.DataFrame()
+    
+    # Streamlit UI
+st.set_page_config(page_title="Job Assessment Recommender")
+st.title("Job Assessment Recommender")
+st.markdown("Need help choosing the right assessments for a role? Just paste the job description below, and I’ll find the best matches for you.")
+
+query = st.text_area("✍️ Paste the Job Description or Role Details Below", height=200)
+
+if st.button("Get Assessment Recommendations"):
+    if query.strip():
+        st.info("🔍 Looking for the most relevant assessments...")
+        recommendations = get_gemini_recommendations(query)
+
+        if not recommendations.empty:
+            st.success("✅ Here are some assessments that could be a great fit!")
+            st.dataframe(recommendations, use_container_width=True)
+        else:
+            st.warning("I couldn’t find any matches. Try refining the job description or being more specific.")
+    else:
+        st.error("Please enter something about the job role before hitting the button.")

@@ -16,6 +16,14 @@ app = FastAPI()
 class QueryInput(BaseModel):
     query: str
 
+
+@app.get("/")
+def root():
+    return {
+        "message": "✅ API is running.",
+        "usage": "POST to /get-assessments with {'query': '<job description>'}"
+    }
+
 @app.post("/get-assessments")
 def get_assessments(input: QueryInput):
     prompt = f"""
@@ -43,5 +51,9 @@ Return only a JSON list like this:
 
     try:
         return json.loads(response.text)
-    except:
-        return {"error": "Could not parse AI response", "raw": response.text}
+    except json.JSONDecodeError:
+        return {
+            "error": "❌ Could not parse AI response. Likely invalid JSON.",
+            "raw_output": response.text
+        }
+

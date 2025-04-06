@@ -24,29 +24,37 @@ def get_gemini_recommendations(query):
     model = genai.GenerativeModel("gemini-1.5-pro-001")
 
     prompt = f"""
-    You are an AI assistant helping match job descriptions to SHL assessments.
+You’re an expert assistant helping recruiters and HR professionals choose the best SHL assessments for hiring.
 
-    Here is the job description:
-    \"\"\"{query}\"\"\"
+Here’s a job description or requirement:
+\"\"\"{query}\"\"\"
 
-    Pick the 10 most relevant assessments from this list:
-    {available_assessments}
+Based on this, suggest up to 10 relevant assessments from the list below.
 
-    Return a JSON list like this:
-    [
-    {{
-        "Name": "Assessment Name",
-        "URL": "https://...",
-        "Duration": 45,
-        "Type": "Cognitive",
-        "Remote": "Yes",
-        "Adaptive": "Yes"
-    }}
-    ]
+Available assessments:
+{df.to_string(index=False)}
+
+For each recommendation, return a JSON object with:
+- "Name" (name of the assessment),
+- "URL" (link to the assessment),
+- "Duration" (in minutes),
+- "Type" (e.g. Cognitive, Behavioral, Technical),
+- "Remote" (Yes or No),
+- "Adaptive" (Yes or No)
+
+Please return only the JSON list like this:
+[
+  {{
+    "Name": "Assessment Name",
+    "URL": "https://...",
+    "Duration": 45,
+    "Type": "Cognitive",
+    "Remote": "Yes",
+    "Adaptive": "Yes"
+  }},
+  ...
+]
     """
-
-
-
     response = model.generate_content(prompt)
     result_text = response.text
 
